@@ -19,10 +19,10 @@ public class GestorRecursos {
         // manager.load("personajes/kiri.png", Texture.class);
     }
 
-    // Método para obtener una textura rápida
+    /*// Método para obtener una textura rápida
     public static Texture getTexture(String path) {
         return manager.get(path, Texture.class);
-    }
+    }*/
 
     // Liberar todo al cerrar la aplicación
     public static void dispose() {
