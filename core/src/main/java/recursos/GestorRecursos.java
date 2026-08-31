@@ -5,13 +5,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.audio.Music;
 
+
 public class GestorRecursos {
 
     public static final AssetManager manager = new AssetManager();
 
     // Métodos para encolar cargas
     public static void cargarMenu() {
-        manager.load("scenes/menu.png", Texture.class);
+        manager.load("scenes/fondotitulo.png", Texture.class);
+        manager.finishLoading();
     }
 
     public static void cargarCombate() {

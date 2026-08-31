@@ -10,13 +10,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import miempresa.LPOO.juegoPRINCIPAL;
 import recursos.GestorRecursos;
 
 public class MenuPrincipal implements Screen {
-
+	
+	private OrthographicCamera camera;
+	private Viewport viewport;
     private juegoPRINCIPAL juego;
     private SpriteBatch batch;
     private Texture fondo;
@@ -29,34 +33,35 @@ public class MenuPrincipal implements Screen {
     public MenuPrincipal(juegoPRINCIPAL juego) {
         this.juego = juego;
         batch = new SpriteBatch();
-        
-        // Obtener la textura cargada desde GestorRecursos
-        fondo = GestorRecursos.getTexture("scenes/menu.png");
 
-        // 1. Inicializar el Stage (contenedor de botones)
-        stage = new Stage(new ScreenViewport());
+        GestorRecursos.cargarMenu();
 
-        // 2. Cargar textura del botón (Asegúrate de colocar tu imagen en la carpeta assets)
-        texturaBotonSalir = new Texture(Gdx.files.internal("ui/boton_salir.png"));
+        fondo = GestorRecursos.getTexture("scenes/fondotitulo.png");
 
-        // 3. Crear la apariencia gráfica del botón
+        // Cámara y viewport del juego
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(1920, 1080, camera);
+        viewport.apply();
+
+        // Stage usando el mismo viewport
+        stage = new Stage(viewport);
+
+       /* texturaBotonSalir = new Texture(Gdx.files.internal("ui/boton_salir.png"));
+
         TextureRegionDrawable drawableSalir = new TextureRegionDrawable(texturaBotonSalir);
         botonSalir = new ImageButton(drawableSalir);
 
-        // 4. Posicionar el botón en pantalla (X, Y)
         botonSalir.setPosition(100, 100);
 
-        // 5. Asignar el evento al hacer clic
+
         botonSalir.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Acción de salir de la aplicación
-                Gdx.app.exit();
-            }
+                Gdx.app.exit(); 
+            } 
         });
 
-        // 6. Agregar el botón al Stage
-        stage.addActor(botonSalir);
+        stage.addActor(botonSalir); */
     }
 
     @Override
@@ -67,23 +72,27 @@ public class MenuPrincipal implements Screen {
 
     @Override
     public void render(float delta) {
-        // Limpiar la pantalla
+
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Dibujar el fondo con el SpriteBatch habitual
+        camera.update();
+
+        batch.setProjectionMatrix(camera.combined);
+
         batch.begin();
-        batch.draw(fondo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        batch.draw(fondo, 0, 0, 1920, 1080);
+
         batch.end();
 
-        // Actualizar y dibujar los botones/actores del Stage
         stage.act(delta);
         stage.draw();
     }
 
+    
     @Override
     public void resize(int width, int height) {
-        // Actualizar el viewport de la interfaz al cambiar el tamaño de la ventana
         stage.getViewport().update(width, height, true);
     }
 
