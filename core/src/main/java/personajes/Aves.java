@@ -1,6 +1,9 @@
 package personajes;
 
-import controles.Controles;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import recursos.GestorRecursos;
 
 public class Aves {
 	private String ave;
@@ -10,8 +13,12 @@ public class Aves {
 	private float velocidadY;
 	private float salud;
 	private float energiaEspecial;
+	private Texture textura;
+	private Sprite sprite;
+	private float ancho;
+	private float alto;
 	
-	public Aves(String nombreAve, float x, float y) {
+	public Aves(String nombreAve, float x, float y, String rutaTextura) {
 		this.ave = nombreAve;
 		this.posX = x;
 		this.posY = y;
@@ -19,6 +26,41 @@ public class Aves {
 		this.velocidadY = 0;
 		this.salud = 100;
 		this.energiaEspecial = 0;
+		this.ancho = 64;
+		this.alto = 64;
+		
+		cargarTextura(rutaTextura);
+	}
+	
+	/**
+	 * Carga la textura del personaje desde el GestorRecursos
+	 * @param ruta ruta de la textura (usar constantes de GestorRecursos)
+	 */
+	public void cargarTextura(String ruta) {
+		try {
+			this.textura = GestorRecursos.obtenerTextura(ruta);
+			if (this.textura != null) {
+				this.sprite = new Sprite(textura);
+				this.sprite.setPosition(posX, posY);
+				this.sprite.setSize(ancho, alto);
+			} else {
+				System.err.println("No se pudo cargar la textura: " + ruta);
+			}
+		} catch (Exception e) {
+			System.err.println("Error al cargar textura: " + ruta);
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Dibuja el personaje en pantalla
+	 * @param batch el SpriteBatch para dibujar
+	 */
+	public void dibujar(SpriteBatch batch) {
+		if (sprite != null) {
+			sprite.setPosition(posX, posY);
+			sprite.draw(batch);
+		}
 	}
 	
 	/**
@@ -163,5 +205,35 @@ public class Aves {
 	
 	public void setEnergiaEspecial(float energia) {
 		this.energiaEspecial = energia;
+	}
+	
+	public Texture getTextura() {
+		return textura;
+	}
+	
+	public Sprite getSprite() {
+		return sprite;
+	}
+	
+	public float getAncho() {
+		return ancho;
+	}
+	
+	public void setAncho(float ancho) {
+		this.ancho = ancho;
+		if (sprite != null) {
+			sprite.setSize(ancho, alto);
+		}
+	}
+	
+	public float getAlto() {
+		return alto;
+	}
+	
+	public void setAlto(float alto) {
+		this.alto = alto;
+		if (sprite != null) {
+			sprite.setSize(ancho, alto);
+		}
 	}
 }
