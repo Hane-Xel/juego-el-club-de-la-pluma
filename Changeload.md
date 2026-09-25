@@ -1,4 +1,4 @@
-## [Unreleased]
+## Inicio
 ### Añadido 
 -Codeo del menu \
 -Se inicializó el proyecto \
@@ -55,7 +55,7 @@ clases: \
 
 ●gestorRecursos \
 
-## 27/8\
+## 27/8
 
 ### Añadido 
 -estructura inicial de GestorRecursos\
@@ -65,7 +65,7 @@ clases: \
 ### Problemas encontrados
 -La imagen del menú principal esta recortada por los bordes\
 
-## 31/8 \
+## 31/8 
 
 ### Añadido
 -boton de comenzar\
@@ -99,7 +99,7 @@ clases: \
 ●GestorRecursos: Ahora funciona para tener los sprites de todos los escenarios.\
 
 
-## 19/9\
+## 19/9
 
 ### Añadido
 -Las animaciones ligadas a acciones\
