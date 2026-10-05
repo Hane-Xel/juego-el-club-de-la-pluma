@@ -1,9 +1,9 @@
 package recursos;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
 public class GestorRecursosPersonajes {
@@ -11,72 +11,73 @@ public class GestorRecursosPersonajes {
     public enum EstadoAnimacion {
         REPOSO,
         CAMINAR,
-        ATACAR,
+        ATACAR_NEUTRAL,
+        ATACAR_LATERAL,
+        ATACAR_ABAJO,
         BLOQUEAR,
-        RECIBIR_DANIO,
-        ESPECIAL
+        ESPECIAL,
+        RECIBIR_DANIO
     }
 
-    private static final ObjectMap<String, ObjectMap<EstadoAnimacion, Animation<TextureRegion>>> animaciones = new ObjectMap<>();
+    private static ObjectMap<String, ObjectMap<EstadoAnimacion, Animation<TextureRegion>>> animacionesPersonajes = new ObjectMap<>();
 
-    public static void cargarAnimaciones() {
-        animaciones.clear();
-        cargarAve1();
+    public static void cargarPersonaje(String nombrePersonaje, String carpeta) {
+        ObjectMap<EstadoAnimacion, Animation<TextureRegion>> mapaAnimaciones = new ObjectMap<>();
 
-        // Estructura lista para las subclases de personajes
-        String[] nombres = {"Kiri", "Corvervance", "Emuans", "Flavia", "Mani", "PG"};
-        for (String nombre : nombres) {
-            if (!animaciones.containsKey(nombre)) {
-                animaciones.put(nombre, new ObjectMap<>());
+        String rutaBase = (carpeta.endsWith("/") || carpeta.isEmpty()) ? carpeta : carpeta + "/";
+
+        System.out.println("Cargando personaje: " + nombrePersonaje + " desde la ruta absoluta de assets: " + Gdx.files.internal(rutaBase).file().getAbsolutePath());
+
+        // Hojas de sprite de 1 fila x 1 columna
+        mapaAnimaciones.put(EstadoAnimacion.REPOSO,         cargarAnimacion(rutaBase + "reposo.png", 1, 1, 0.15f, Animation.PlayMode.LOOP));
+        mapaAnimaciones.put(EstadoAnimacion.CAMINAR,        cargarAnimacion(rutaBase + "caminar.png", 1, 1, 0.10f, Animation.PlayMode.LOOP));
+        
+        mapaAnimaciones.put(EstadoAnimacion.ATACAR_NEUTRAL, cargarAnimacion(rutaBase + "ataque_neutral.png", 1, 1, 0.08f, Animation.PlayMode.NORMAL));
+        mapaAnimaciones.put(EstadoAnimacion.ATACAR_LATERAL, cargarAnimacion(rutaBase + "ataque_lateral.png", 1, 1, 0.10f, Animation.PlayMode.NORMAL));
+        mapaAnimaciones.put(EstadoAnimacion.ATACAR_ABAJO,   cargarAnimacion(rutaBase + "ataque_abajo.png",   1, 1, 0.09f, Animation.PlayMode.NORMAL));
+
+        mapaAnimaciones.put(EstadoAnimacion.BLOQUEAR,      cargarAnimacion(rutaBase + "bloquear.png", 1, 1, 0.20f, Animation.PlayMode.NORMAL));
+        mapaAnimaciones.put(EstadoAnimacion.ESPECIAL,      cargarAnimacion(rutaBase + "especial.png", 1, 1, 0.10f, Animation.PlayMode.NORMAL));
+        mapaAnimaciones.put(EstadoAnimacion.RECIBIR_DANIO, cargarAnimacion(rutaBase + "dano.png",     1, 1, 0.10f, Animation.PlayMode.NORMAL));
+
+        animacionesPersonajes.put(nombrePersonaje, mapaAnimaciones);
+    }
+
+    private static Animation<TextureRegion> cargarAnimacion(String rutaArchivo, int filas, int columnas, float frameDuration, Animation.PlayMode mode) {
+        if (!Gdx.files.internal(rutaArchivo).exists()) {
+            System.out.println("ADVERTENCIA: No se encontró el archivo en -> " + Gdx.files.internal(rutaArchivo).file().getAbsolutePath());
+            return null;
+        }
+
+        Texture textura = new Texture(Gdx.files.internal(rutaArchivo));
+        TextureRegion[][] tmp = TextureRegion.split(textura, textura.getWidth() / columnas, textura.getHeight() / filas);
+        
+        TextureRegion[] frames = new TextureRegion[filas * columnas];
+        int index = 0;
+        for (int i = 0; i < filas; i++) {
+            for (int j = 0; j < columnas; j++) {
+                frames[index++] = tmp[i][j];
             }
         }
-    }
 
-    private static void cargarAve1() {
-        ObjectMap<EstadoAnimacion, Animation<TextureRegion>> mapaAve1 = new ObjectMap<>();
-
-        Texture texBase = GestorRecursos.obtenerTextura("characters/Ave1.png");
-        if (texBase != null) mapaAve1.put(EstadoAnimacion.REPOSO, crearEstatica(texBase));
-
-        Texture texAtaque = GestorRecursos.obtenerTextura("characters/Ave1_ataque.png");
-        if (texAtaque != null) mapaAve1.put(EstadoAnimacion.ATACAR, crearEstatica(texAtaque));
-
-        Texture texBloqueo = GestorRecursos.obtenerTextura("characters/Ave1_bloqueo.png");
-        if (texBloqueo != null) mapaAve1.put(EstadoAnimacion.BLOQUEAR, crearEstatica(texBloqueo));
-
-        Texture texDanio = GestorRecursos.obtenerTextura("characters/Ave1_daño.png");
-        if (texDanio != null) mapaAve1.put(EstadoAnimacion.RECIBIR_DANIO, crearEstatica(texDanio));
-
-        Texture texEspecial = GestorRecursos.obtenerTextura("characters/Especial.png");
-        if (texEspecial != null) mapaAve1.put(EstadoAnimacion.ESPECIAL, crearEstatica(texEspecial));
-
-        animaciones.put("Ave1", mapaAve1);
-    }
-
-    private static Animation<TextureRegion> crearEstatica(Texture textura) {
-        Array<TextureRegion> frames = new Array<>();
-        frames.add(new TextureRegion(textura));
-        return new Animation<>(1.0f, frames);
+        Animation<TextureRegion> animacion = new Animation<>(frameDuration, frames);
+        animacion.setPlayMode(mode);
+        return animacion;
     }
 
     public static TextureRegion obtenerFrame(String nombrePersonaje, EstadoAnimacion estado, float stateTime) {
-        ObjectMap<EstadoAnimacion, Animation<TextureRegion>> mapa = animaciones.get(nombrePersonaje);
-        if (mapa != null && mapa.containsKey(estado)) {
-            return mapa.get(estado).getKeyFrame(stateTime);
-        }
-        
-        // Fallback a Ave1 en reposo
-        ObjectMap<EstadoAnimacion, Animation<TextureRegion>> ave1 = animaciones.get("Ave1");
-        if (ave1 != null && ave1.containsKey(EstadoAnimacion.REPOSO)) {
-            return ave1.get(EstadoAnimacion.REPOSO).getKeyFrame(stateTime);
+        if (animacionesPersonajes.containsKey(nombrePersonaje)) {
+            ObjectMap<EstadoAnimacion, Animation<TextureRegion>> mapa = animacionesPersonajes.get(nombrePersonaje);
+            if (mapa != null && mapa.containsKey(estado) && mapa.get(estado) != null) {
+                return mapa.get(estado).getKeyFrame(stateTime);
+            }
         }
         return null;
     }
-
-    /**
-     * Limpia la memoria y remueve todas las referencias de animaciones.
-     */
+    
     public static void dispose() {
-        animaciones.clear();
+        if (animacionesPersonajes != null) {
+            animacionesPersonajes.clear();
+        }
     }
 }

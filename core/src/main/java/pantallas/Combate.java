@@ -47,19 +47,21 @@ public class Combate implements Screen {
         this.camera = new OrthographicCamera();
         this.viewport = new FitViewport(1920, 1080, camera);
 
-        // Carga de activos
+        // Carga de activos globales (escenarios y música)
         GestorRecursos.cargarCombate();
-        GestorRecursosPersonajes.cargarAnimaciones();
+        
+        // Carga de animaciones para el personaje "ave1"
+        GestorRecursosPersonajes.cargarPersonaje("ave1", "characters/ave1");
 
         this.escenario = escenario;
 
         // Asignación de posiciones iniciales de aparición (Spawns)
-        if (escenario.getPosicionSpawnJugador1() != null) {
+        if (escenario != null && escenario.getPosicionSpawnJugador1() != null) {
             personajeJ1.setPosX(escenario.getPosicionSpawnJugador1().x);
             personajeJ1.setPosY(escenario.getPosicionSpawnJugador1().y);
         }
 
-        if (escenario.getPosicionSpawnJugador2() != null) {
+        if (escenario != null && escenario.getPosicionSpawnJugador2() != null) {
             personajeJ2.setPosX(escenario.getPosicionSpawnJugador2().x);
             personajeJ2.setPosY(escenario.getPosicionSpawnJugador2().y);
         }

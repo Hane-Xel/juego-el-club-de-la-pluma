@@ -91,8 +91,8 @@ public class MenuPrincipal implements Screen {
                 GestorRecursos.cargarCombate();
 
                 // 2. Instanciar los objetos del juego
-                Aves jugador1 = new Aves("Ave1", 0, 0, "characters/Ave1.png");
-                Aves jugador2 = new Aves("Ave1", 0, 0, "characters/Ave1.png");
+                Aves jugador1 = new Aves("ave1", 0, 0, "characters/Ave1.png");
+                Aves jugador2 = new Aves("ave1", 0, 0, "characters/Ave1.png");
                 Escena escenarioPlaya = new Playa();
 
                 // 3. Cambiar a la pantalla de Combate
