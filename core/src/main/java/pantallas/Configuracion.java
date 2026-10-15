@@ -1,10 +1,6 @@
 package pantallas;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -26,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import controles.ConfControles;
 import miempresa.LPOO.juegoPRINCIPAL;
 import recursos.GestorRecursos;
 
@@ -40,19 +37,16 @@ public class Configuracion implements Screen {
     private Stage stage;
     private BitmapFont font;
 
-    // 1. Componentes del Slider de Volumen
+    // 1. Slider de Volumen
     private Slider sliderVolumen;
     private Label labelPorcentaje;
     private Texture texSliderBg;
     private Texture texSliderKnob;
 
-    // 2. Componentes de Reasignación de Teclas
-    private TextButton btnTeclaSalto;
-    private Label labelEstadoTeclado;
-    private boolean esperandoTecla = false;
-    private int teclaSalto = Keys.SPACE; // Tecla predeterminada: Espacio
+    // 2. Bot�n para ir a Configurar Controles
+    private TextButton btnIrAControles;
 
-    // 3. Botón Volver
+    // 3. Bot�n Volver
     private Texture texturaBotonVolver;
     private ImageButton botonVolver;
 
@@ -70,10 +64,10 @@ public class Configuracion implements Screen {
 
         stage = new Stage(viewport);
 
-        float posX = 700f; // Alineación central horizontal
+        float posX = 760f;
 
         // -------------------------------------------------------------
-        // BARRA DE VOLUMEN (SLIDER)
+        // BARRA DE VOLUMEN
         // -------------------------------------------------------------
         texSliderBg = crearTexturaColor(400, 20, Color.GRAY);
         texSliderKnob = crearTexturaColor(20, 40, Color.RED);
@@ -83,13 +77,13 @@ public class Configuracion implements Screen {
         styleSlider.knob = new TextureRegionDrawable(texSliderKnob);
 
         sliderVolumen = new Slider(0f, 1f, 0.01f, false, styleSlider);
-        sliderVolumen.setValue(1.0f); // 100% inicio
+        sliderVolumen.setValue(1.0f);
         sliderVolumen.setSize(400, 40);
         sliderVolumen.setPosition(posX, 700);
 
         Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
         labelPorcentaje = new Label("Volumen: 100%", labelStyle);
-        labelPorcentaje.setPosition(posX + 420, 705);
+        labelPorcentaje.setPosition(posX + 430, 705);
 
         sliderVolumen.addListener(new ChangeListener() {
             @Override
@@ -97,8 +91,6 @@ public class Configuracion implements Screen {
                 float valor = sliderVolumen.getValue();
                 int porcentaje = Math.round(valor * 100);
                 labelPorcentaje.setText("Volumen: " + porcentaje + "%");
-                // Aquí puedes actualizar la música activa:
-                // GestorRecursos.obtenerMusica("mi_musica.mp3").setVolume(valor);
             }
         });
 
@@ -106,43 +98,36 @@ public class Configuracion implements Screen {
         stage.addActor(labelPorcentaje);
 
         // -------------------------------------------------------------
-        // CAMBIAR CONTROLES (REASIGNACIÓN)
+        // BOT�N "CONFIGURAR CONTROLES"
         // -------------------------------------------------------------
-        Texture texBtnBg = crearTexturaColor(350, 60, Color.DARK_GRAY);
+        Texture texBtnBg = crearTexturaColor(400, 80, Color.DARK_GRAY);
         TextButton.TextButtonStyle styleTextBtn = new TextButton.TextButtonStyle();
         styleTextBtn.up = new TextureRegionDrawable(texBtnBg);
         styleTextBtn.font = font;
         styleTextBtn.fontColor = Color.YELLOW;
 
-        btnTeclaSalto = new TextButton("Salto: " + Keys.toString(teclaSalto), styleTextBtn);
-        btnTeclaSalto.setSize(350, 60);
-        btnTeclaSalto.setPosition(posX, 520);
+        btnIrAControles = new TextButton("Configurar Controles", styleTextBtn);
+        btnIrAControles.setSize(400, 80);
+        btnIrAControles.setPosition(posX, 520);
 
-        labelEstadoTeclado = new Label("", labelStyle);
-        labelEstadoTeclado.setPosition(posX + 370, 535);
-
-        btnTeclaSalto.addListener(new ClickListener() {
+        btnIrAControles.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                esperandoTecla = true;
-                btnTeclaSalto.setText("Salto: [___]"); // Se borra el control actual
-                labelEstadoTeclado.setText("Presiona una tecla...");
+                // Navega hacia la pantalla ConfControles
+                juego.setScreen(new ConfControles(juego, null)); // Puedes pasar la instancia de Controles si la tienes
             }
         });
 
-        stage.addActor(btnTeclaSalto);
-        stage.addActor(labelEstadoTeclado);
+        stage.addActor(btnIrAControles);
 
         // -------------------------------------------------------------
-        // BOTÓN VOLVER (ESQUINA INFERIOR IZQUIERDA)
+        // BOT�N VOLVER (MEN� PRINCIPAL)
         // -------------------------------------------------------------
-        texturaBotonVolver = new Texture(Gdx.files.internal("ui/botonbeggin.png")); // Cambiar por ui/botonvolver.png cuando la tengas
+        texturaBotonVolver = new Texture(Gdx.files.internal("ui/botonbeggin.png"));
         botonVolver = new ImageButton(new TextureRegionDrawable(texturaBotonVolver));
 
-        float anchoBoton = 350f;
-        float altoBoton = 160f;
-        botonVolver.setSize(anchoBoton, altoBoton);
-        botonVolver.getImageCell().size(anchoBoton, altoBoton);
+        botonVolver.setSize(250f, 80f);
+        botonVolver.getImageCell().size(250f, 80f);
         botonVolver.setPosition(100, 60);
 
         botonVolver.addListener(new ClickListener() {
@@ -157,26 +142,7 @@ public class Configuracion implements Screen {
 
     @Override
     public void show() {
-        // Escuchador de teclado en vivo para capturar la nueva tecla presionada
-        InputProcessor receptorTeclas = new InputAdapter() {
-            @Override
-            public boolean keyDown(int keycode) {
-                if (esperandoTecla) {
-                    teclaSalto = keycode; // Asigna la nueva tecla retenida
-                    btnTeclaSalto.setText("Salto: " + Keys.toString(teclaSalto));
-                    labelEstadoTeclado.setText("¡Guardado!");
-                    esperandoTecla = false;
-                    return true;
-                }
-                return false;
-            }
-        };
-
-        // Permite interactuar con la UI y con las teclas físicas simultáneamente
-        InputMultiplexer multiplexer = new InputMultiplexer();
-        multiplexer.addProcessor(stage);
-        multiplexer.addProcessor(receptorTeclas);
-        Gdx.input.setInputProcessor(multiplexer);
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -195,19 +161,10 @@ public class Configuracion implements Screen {
         stage.draw();
     }
 
-    @Override
-    public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true);
-    }
-
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
-
-    @Override
-    public void hide() {}
+    @Override public void resize(int width, int height) { stage.getViewport().update(width, height, true); }
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 
     @Override
     public void dispose() {
@@ -219,7 +176,6 @@ public class Configuracion implements Screen {
         stage.dispose();
     }
 
-    // Método auxiliar para crear recuadros de color sin requerir imágenes externas
     private Texture crearTexturaColor(int width, int height, Color color) {
         Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
         pixmap.setColor(color);
