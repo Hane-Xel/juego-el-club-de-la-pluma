@@ -118,6 +118,6 @@ clases: \
 ## 28/10
 
 ### Añadido
--Añadido personaje jugable Kiri \ 
--Configuracion de controles\
+-Añadido personaje jugable Kiri \
+-Configuracion de controles \
 
