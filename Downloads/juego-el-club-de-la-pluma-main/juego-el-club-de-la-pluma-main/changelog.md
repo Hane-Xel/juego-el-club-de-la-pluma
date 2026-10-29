@@ -119,5 +119,5 @@ clases: \
 
 ### Añadido
 -Añadido personaje jugable Kiri \
--Configuracion de controles \
+-Configuracion de controles
 
