@@ -115,3 +115,9 @@ clases: \
 ### Arreglado
 -Error que hacía que los personajes se cayesen del escenario al achicar y agrandar la pantalla.
 
+## 28/10
+
+### Añadido
+-Añadido personaje jugable Kiri
+-Configuracion de controles
+
