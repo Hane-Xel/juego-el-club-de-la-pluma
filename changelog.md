@@ -53,29 +53,29 @@ clases: \
 
 clases: \
 
-●gestorRecursos \
+●gestorRecursos 
 
 ## 27/8
 
 ### Añadido 
 -estructura inicial de GestorRecursos\
 -pantalla de menú para el juego\
--Ajusté la imagen de fondo del menu\
+-Ajusté la imagen de fondo del menu
 
 ### Problemas encontrados
--La imagen del menú principal esta recortada por los bordes\
+-La imagen del menú principal esta recortada por los bordes
 
 ## 31/8 
 
 ### Añadido
 -boton de comenzar\
--boton de salir\
+-boton de salir
 
 
 ## 16/09
 
 ### Cambiado
--botón de comenzar cambiado temporalmente para enviar a la pantalla de Combate con ambos jugadores usando a Ave1 y en el escenario de playa.\
+-botón de comenzar cambiado temporalmente para enviar a la pantalla de Combate con ambos jugadores usando a Ave1 y en el escenario de playa.
 
 ### Añadido
 -botones del menú principal cambiados de imágenes a botones de texto.\
@@ -96,7 +96,7 @@ clases: \
 ●MenuPrincipal: Botones de texto en vez de imágenes y cambio temporal del botón de comenzar.\
 ●Escena: Ahora pone la gravedad y funciona como una base para el resto de escenarios\
 ●Playa: Ahora se puede usar. Tiene su propia altura mínima y posiciones iniciales\
-●GestorRecursos: Ahora funciona para tener los sprites de todos los escenarios.\
+●GestorRecursos: Ahora funciona para tener los sprites de todos los escenarios.
 
 
 ## 19/9
@@ -107,7 +107,7 @@ clases: \
 -acción de defensa\
 -Barras de vida\
 -Musica para el escenario de playa\
--Retroceso al recibir el daño\
+-Retroceso al recibir el daño
 
 ### Cambiado
 -Ahora la pantalla es la misma sin importar la resolución. Ayuda a que las propiedades como las hitbox, plataformas, ETC. no presenten problemas al cambiar la resolucion o al achicar y agrandar.
@@ -118,7 +118,7 @@ clases: \
 ## 19/10
 
 ### Añadido
--Personaje jugable Kiri\
+-Personaje jugable Kiri
 
 ### Eliminado
 -Paquete no utilizado interfaz con todas las clases asociadas 
@@ -126,7 +126,7 @@ clases: \
 ## 31/10
 
 ### Añadido
--Personaje jugable Emuans\
+-Personaje jugable Emuans
 
 ## 4/10
 
@@ -137,14 +137,14 @@ clases: \
 -Escenario Gran Montaña con plataformas y una mecanica de caida del escenario con perdida automatica\
 -Menu de pausa en plena partida con acceso a reanudarla, ir al selector de personajes o al menu principal\
 -Animaciones de salto y caida\
--Doble salto\
+-Doble salto
 
 ### Eliminado
 -Clase de Flavia\
 -Clase de PG\
--Clase de Mani\
+-Clase de Mani
 
 ### Arreglado
 -Animaciones de emuans desincronizadas\
--Ataques con daños diferentes\
+-Ataques con daños diferentes
 
