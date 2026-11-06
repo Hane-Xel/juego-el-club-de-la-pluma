@@ -128,3 +128,23 @@ clases: \
 ### Añadido
 -Personaje jugable Emuans\
 
+## 4/10
+
+### Añadido
+-Seleccion de personajes con boton aleatorio\
+-Configuracion de sonido\
+-Configuracion de teclas de accion para ambos jugadores\
+-Escenario Gran Montaña con plataformas y una mecanica de caida del escenario con perdida automatica\
+-Menu de pausa en plena partida con acceso a reanudarla, ir al selector de personajes o al menu principal\
+-Animaciones de salto y caida\
+-Doble salto\
+
+### Eliminado
+-Clase de Flavia\
+-Clase de PG\
+-Clase de Mani\
+
+### Arreglado
+-Animaciones de emuans desincronizadas\
+-Ataques con daños diferentes\
+
