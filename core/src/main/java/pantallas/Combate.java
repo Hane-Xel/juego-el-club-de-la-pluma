@@ -32,6 +32,10 @@ import personajes.Emuans;
 import recursos.GestorRecursos;
 import recursos.GestorRecursosPersonajes;
 
+/**
+ * Pantalla principal de Combate. 
+ * Controla el bucle del juego, físicas, colisiones de ataques, HUD de vida/energía y menú de pausa.
+ */
 public class Combate implements Screen {
 	
     // --- VARIABLES PARA EL SISTEMA DE PAUSA SUPERPUESTO ---
@@ -53,12 +57,17 @@ public class Combate implements Screen {
     private boolean partidaTerminada = false;
     private float tiempoTranscurridoCombate = 0f;
 
-    // Configuración visual del HUD de vida
+    // Configuración visual del HUD de vida y energía
     private static final float ANCHO_BARRA = 500f;
     private static final float ALTO_BARRA = 40f;
     private static final float MARGEN_SUPERIOR = 50f;
     private static final float MARGEN_LATERAL = 60f;
 
+    /**
+     * CONSTRUCTOR: Combate
+     * QUÉ HACE: Inicializa la escena de lucha, posiciona a los combatientes en base al escenario 
+     * y configura el menú de pausa flotante (overlay).
+     */
     public Combate(juegoPRINCIPAL juego, Aves personajeJ1, Aves personajeJ2, Escena escenario) {
         this.juego = juego;
         this.batch = new SpriteBatch();
@@ -67,14 +76,14 @@ public class Combate implements Screen {
         this.camera = new OrthographicCamera();
         this.viewport = new FitViewport(1920, 1080, camera);
 
-        // 1. Asignar el escenario recibido por parámetro
+        // 1. Asignar el escenario recibido por parámetro[cite: 45]
         this.escenario = escenario;
 
-        // 2. Cargar los recursos necesarios
+        // 2. Cargar los recursos necesarios para el combate[cite: 45]
         GestorRecursos.cargarCombate();
         GestorRecursosPersonajes.cargarPersonaje("ave1", "characters/ave1");
 
-        // 3. Posicionar a los personajes usando los spawns reales del escenario
+        // 3. Posicionar a los personajes usando las coordenadas de spawn reales del escenario[cite: 45]
         if (this.escenario != null) {
             if (this.escenario.getPosicionSpawnJugador1() != null) {
                 personajeJ1.setPosX(this.escenario.getPosicionSpawnJugador1().x);
@@ -87,7 +96,7 @@ public class Combate implements Screen {
             }
         }
 
-        // RECUPERAMOS el gestor global que ya tiene guardadas las teclas personalizadas
+        // Recupera el gestor global que almacena las teclas personalizadas del usuario[cite: 45]
         this.controles = juego.getGestorControles();
         this.controles.setPersonaje1(personajeJ1);
         this.controles.setPersonaje2(personajeJ2);
@@ -95,12 +104,11 @@ public class Combate implements Screen {
         Gdx.input.setInputProcessor(this.controles);
         this.gestorJugadores = new Jugadores(personajeJ1, personajeJ2, this.controles);
 
-        // --- CONFIGURACIÓN DEL MENÚ DE PAUSA SUPERPUESTO (OVERLAY) ---
+        // --- CONFIGURACIÓN DEL MENÚ DE PAUSA SUPERPUESTO (OVERLAY) ---[cite: 45]
         this.stagePausa = new Stage(viewport, batch);
         this.fontPausa = new BitmapFont();
         this.fontPausa.getData().setScale(1.8f);
 
-        // Carga de la imagen de pausa de 675 x 855
         if (Gdx.files.internal("scenes/pausa.png").exists()) {
             texFondoPausa = new Texture(Gdx.files.internal("scenes/pausa.png"));
         } else {
@@ -124,13 +132,12 @@ public class Combate implements Screen {
         TextButton btnSelector = new TextButton("CAMBIAR PERSONAJES", estiloBotonPausa);
         TextButton btnMenuPausa = new TextButton("MENU PRINCIPAL", estiloBotonPausa);
 
-        // 1. Botón Reanudar
+        // Listener: Reanudar partida[cite: 45]
         btnReanudar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 pausado = false;
                 
-                // Detenemos la música de pausa y reanudamos la del escenario
                 Music musicaPausa = GestorRecursos.obtenerMusica(GestorRecursos.MUSICA_PAUSA);
                 if (musicaPausa != null && musicaPausa.isPlaying()) {
                     musicaPausa.stop();
@@ -143,11 +150,10 @@ public class Combate implements Screen {
             }
         });
 
-        // 2. Botón Selector de Personajes
+        // Listener: Volver al selector de personajes[cite: 45]
         btnSelector.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Asegurarnos de apagar la música de pausa antes de cambiar de pantalla
                 Music musicaPausa = GestorRecursos.obtenerMusica(GestorRecursos.MUSICA_PAUSA);
                 if (musicaPausa != null && musicaPausa.isPlaying()) {
                     musicaPausa.stop();
@@ -156,7 +162,7 @@ public class Combate implements Screen {
             }
         });
 
-        // 3. Botón Menú Principal
+        // Listener: Volver al menú principal[cite: 45]
         btnMenuPausa.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -181,68 +187,56 @@ public class Combate implements Screen {
         if (!pausado) {
             Gdx.input.setInputProcessor(this.controles);
         }
-
         if (escenario != null) {
             escenario.reproducirMusica(); 
         }
     }
 
+    /**
+     * FUNCIÓN: render(float delta)
+     * QUÉ HACE: Controla el bucle de actualización por fotograma, físicas, entradas, renderizado de gráficos y HUD.
+     * CÓMO LO HACE: Detecta si se presiona 'P' para alternar la pausa, actualiza las posiciones y estados de combate,
+     * dibuja el escenario y los personajes, y finalmente renderiza las barras de vida y el menú superpuesto si está pausado.
+     */
     @Override
     public void render(float delta) {
         
-        // --- DETECTAR TECLA 'P' PARA ALTERNAR LA PAUSA Y LA MÚSICA ---
+        // --- DETECTAR TECLA 'P' PARA ALTERNAR LA PAUSA Y LA MÚSICA ---[cite: 45]
         if (Gdx.input.isKeyJustPressed(com.badlogic.gdx.Input.Keys.P)) {
             pausado = !pausado;
             
             if (pausado) {
                 Gdx.input.setInputProcessor(stagePausa); 
+                if (escenario != null) escenario.detenerMusica();
                 
-                // 1. Detenemos la música del escenario
-                if (escenario != null) {
-                    escenario.detenerMusica();
-                }
-                
-                // 2. Reproducimos la música de pausa en LOOP
                 Music musicaPausa = GestorRecursos.obtenerMusica(GestorRecursos.MUSICA_PAUSA);
                 if (musicaPausa != null) {
                     musicaPausa.setLooping(true);
                     musicaPausa.setVolume(GestorRecursos.getVolumenGlobal());
                     musicaPausa.play();
                 }
-
             } else {
                 Gdx.input.setInputProcessor(controles);  
                 
-                // 1. Detenemos la música de pausa
                 Music musicaPausa = GestorRecursos.obtenerMusica(GestorRecursos.MUSICA_PAUSA);
-                if (musicaPausa != null && musicaPausa.isPlaying()) {
-                    musicaPausa.stop();
-                }
+                if (musicaPausa != null && musicaPausa.isPlaying()) musicaPausa.stop();
                 
-                // 2. Reanudamos la música del escenario
-                if (escenario != null) {
-                    escenario.reproducirMusica();
-                }
+                if (escenario != null) escenario.reproducirMusica();
             }
         }
 
-        // Si está pausado, congelamos el tiempo de físicas y lógica de personajes
         if (pausado) {
-            delta = 0f; 
+            delta = 0f; // Congela el tiempo de juego si está pausado[cite: 45]
         } else {
-            if (delta > 0.1f) {
-                delta = 0.1f;
-            }
+            if (delta > 0.1f) delta = 0.1f;
         }
 
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // LÓGICA DE COMBATE
+        // LÓGICA DE COMBATE EN TIEMPO REAL[cite: 45]
         if (!pausado) {
-            if (partidaTerminada) {
-                return;
-            }
+            if (partidaTerminada) return;
 
             tiempoTranscurridoCombate += delta;
 
@@ -251,9 +245,11 @@ public class Combate implements Screen {
             Aves p1 = (gestorJugadores != null && gestorJugadores.getJugador1() != null) ? gestorJugadores.getJugador1().getPersonaje() : null;
             Aves p2 = (gestorJugadores != null && gestorJugadores.getJugador2() != null) ? gestorJugadores.getJugador2().getPersonaje() : null;
 
+            // Enlace de referencias cruzadas si hay personajes específicos como Emuans[cite: 45]
             if (p1 instanceof Emuans && p2 != null) ((Emuans) p1).setOponente(p2);
             if (p2 instanceof Emuans && p1 != null) ((Emuans) p2).setOponente(p1);
 
+            // Condición de victoria: si la salud de un jugador llega a 0, termina la partida[cite: 45]
             if (tiempoTranscurridoCombate > 1.0f && p1 != null && p2 != null) {
                 if (p1.getSalud() <= 0) {
                     partidaTerminada = true;
@@ -267,24 +263,19 @@ public class Combate implements Screen {
             }
 
             if (gestorJugadores != null) {
-                if (p1 != null) {
-                    p1.actualizar(delta, plataformas);
-                }
-                
-                if (p2 != null) {
-                    p2.actualizar(delta, plataformas);
-                }
+                if (p1 != null) p1.actualizar(delta, plataformas);
+                if (p2 != null) p2.actualizar(delta, plataformas);
                 
                 gestorJugadores.actualizar(delta);
-                verificarColisionesAtaque();
+                verificarColisionesAtaque(); // Comprueba golpes, proyectiles y explosiones
             }
         }
 
         camera.update();
-
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
         
+        // Renderizado visual del escenario y plataformas[cite: 45]
         if (escenario != null) {
             escenario.render(batch, viewport.getWorldWidth(), viewport.getWorldHeight());
             escenario.renderPlataformas(batch);
@@ -293,23 +284,26 @@ public class Combate implements Screen {
         Aves p1Visual = (gestorJugadores != null && gestorJugadores.getJugador1() != null) ? gestorJugadores.getJugador1().getPersonaje() : null;
         Aves p2Visual = (gestorJugadores != null && gestorJugadores.getJugador2() != null) ? gestorJugadores.getJugador2().getPersonaje() : null;
 
-        if (p1Visual != null) {
-            p1Visual.dibujar(batch);
-        }
-        if (p2Visual != null) {
-            p2Visual.dibujar(batch);
-        }
+        if (p1Visual != null) p1Visual.dibujar(batch);
+        if (p2Visual != null) p2Visual.dibujar(batch);
+        
         batch.end();
 
+        // Dibuja las barras de vida y energía especiales en pantalla[cite: 45]
         dibujarBarrasVida();
 
-        // --- DIBUJAR MENÚ FLOTANTE DE PAUSA ---
+        // Dibuja la interfaz de pausa flotante si está activada[cite: 45]
         if (pausado) {
             stagePausa.act(Gdx.graphics.getDeltaTime()); 
             stagePausa.draw();
         }
     }
     
+    /**
+     * FUNCIÓN: verificarColisionesAtaque()
+     * QUÉ HACE: Comprueba en cada fotograma si las hitboxes de golpes, proyectiles, misiles o explosiones 
+     * intersectan con los personajes contrarios para aplicar daño, debuffs o calcular energía especial.
+     */
     private void verificarColisionesAtaque() {
         if (gestorJugadores == null) return;
 
@@ -318,14 +312,13 @@ public class Combate implements Screen {
 
         if (p1 == null || p2 == null) return;
 
+        // --- COLISIONES DE PROYECTILES Y EXPLOSIONES (Ej: Emuans) ---[cite: 45]
         if (p2 instanceof Emuans) {
             Emuans emuansP2 = (Emuans) p2;
             if (emuansP2.getProyectilActual() != null && emuansP2.getProyectilActual().isActivo()) {
                 if (emuansP2.getProyectilActual().getHitbox().overlaps(p1.getHitbox())) {
                     float danioBase = emuansP2.getDanioAtaque();
-                    if (p1.tieneDebuffProyectil()) {
-                        danioBase *= 1.5f; 
-                    }
+                    if (p1.tieneDebuffProyectil()) danioBase *= 1.5f; 
                     p1.recibirDanio(danioBase, emuansP2.getPosX());
                     emuansP2.getProyectilActual().desactivar();
                 }
@@ -337,43 +330,14 @@ public class Combate implements Screen {
             if (emuansP1.getProyectilActual() != null && emuansP1.getProyectilActual().isActivo()) {
                 if (emuansP1.getProyectilActual().getHitbox().overlaps(p2.getHitbox())) {
                     float danioBase = emuansP1.getDanioAtaque();
-                    if (p2.tieneDebuffProyectil()) {
-                        danioBase *= 1.5f; 
-                    }
+                    if (p2.tieneDebuffProyectil()) danioBase *= 1.5f; 
                     p2.recibirDanio(danioBase, emuansP1.getPosX());
                     emuansP1.getProyectilActual().desactivar();
                 }
             }
         }
 
-        if (p2 instanceof Emuans) {
-            Emuans emuansP2 = (Emuans) p2;
-            if (emuansP2.getMisilActual() != null && emuansP2.getMisilActual().isActivo()) {
-                if (emuansP2.getMisilActual().getHitbox().overlaps(p1.getHitbox())) {
-                    float danioBase = emuansP2.getDanioAtaque();
-                    if (p1.tieneDebuffProyectil()) {
-                        danioBase *= 1.5f; 
-                    }
-                    p1.recibirDanio(danioBase, emuansP2.getPosX());
-                    emuansP2.getMisilActual().desactivar();
-                }
-            }
-        }
-
-        if (p1 instanceof Emuans) {
-            Emuans emuansP1 = (Emuans) p1;
-            if (emuansP1.getMisilActual() != null && emuansP1.getMisilActual().isActivo()) {
-                if (emuansP1.getMisilActual().getHitbox().overlaps(p2.getHitbox())) {
-                    float danioBase = emuansP1.getDanioAtaque();
-                    if (p2.tieneDebuffProyectil()) {
-                        danioBase *= 1.5f; 
-                    }
-                    p2.recibirDanio(danioBase, emuansP1.getPosX());
-                    emuansP1.getMisilActual().desactivar();
-                }
-            }
-        }
-
+        // Comprobación de colisión para las explosiones (incluyendo el doble salto de Emuans)[cite: 45]
         if (p2 instanceof Emuans) {
             Emuans emuansP2 = (Emuans) p2;
             if (emuansP2.getExplosionActual() != null && emuansP2.getExplosionActual().isActivo()) {
@@ -404,19 +368,15 @@ public class Combate implements Screen {
             }
         }
 
+        // --- COLISIONES DE GOLPES CORPORALES / CUERPO A CUERPO ---[cite: 45]
         if (p1.isAtacando() && !p1.isAtaqueProcesado()) {
             if (p1.getHitboxAtaque().overlaps(p2.getHitbox())) {
                 if (p1 instanceof Emuans && p1.getEspecialActual() == Aves.TipoAtaqueEspecial.ESP_NEUTRAL) {
                     p2.recibirDanio(p1.getDanioAtaque(), p1.getPosX());
                     p2.aplicarDebuffProyectil(5.0f); 
-                }
-                else if (p1 instanceof Kiri && p1.getEspecialActual() == Aves.TipoAtaqueEspecial.ESP_NEUTRAL) {
+                } else if (p1 instanceof Kiri && p1.getEspecialActual() == Aves.TipoAtaqueEspecial.ESP_NEUTRAL) {
                     p2.recibirAtaqueAereoEspecialKiri(p1.getDanioAtaque(), 1100f);
-                } 
-                else if (p1 instanceof Kiri && p1.getEspecialActual() == Aves.TipoAtaqueEspecial.ESP_AEREO_NEUTRAL) {
-                    p2.recibirAtaqueAereoEspecialKiri(p1.getDanioAtaque(), 750f);  
-                } 
-                else {
+                } else {
                     p2.recibirDanio(p1.getDanioAtaque(), p1.getPosX()); 
                 }
 
@@ -430,14 +390,9 @@ public class Combate implements Screen {
                 if (p2 instanceof Emuans && p2.getEspecialActual() == Aves.TipoAtaqueEspecial.ESP_NEUTRAL) {
                     p1.recibirDanio(p2.getDanioAtaque(), p2.getPosX());
                     p1.aplicarDebuffProyectil(5.0f); 
-                }
-                else if (p2 instanceof Kiri && p2.getEspecialActual() == Aves.TipoAtaqueEspecial.ESP_NEUTRAL) {
+                } else if (p2 instanceof Kiri && p2.getEspecialActual() == Aves.TipoAtaqueEspecial.ESP_NEUTRAL) {
                     p1.recibirAtaqueAereoEspecialKiri(p2.getDanioAtaque(), 1100f);
-                } 
-                else if (p2 instanceof Kiri && p2.getEspecialActual() == Aves.TipoAtaqueEspecial.ESP_AEREO_NEUTRAL) {
-                    p1.recibirAtaqueAereoEspecialKiri(p2.getDanioAtaque(), 750f);
-                } 
-                else {
+                } else {
                     p1.recibirDanio(p2.getDanioAtaque(), p2.getPosX());
                 }
 
@@ -447,6 +402,11 @@ public class Combate implements Screen {
         }
     }
 
+    /**
+     * FUNCIÓN: dibujarBarrasVida()
+     * QUÉ HACE: Utiliza el ShapeRenderer para renderizar geométricamente las barras de vida superior 
+     * y los bloques de energía especial de ambos jugadores[cite: 45].
+     */
     private void dibujarBarrasVida() {
         if (gestorJugadores == null) return;
 
@@ -456,7 +416,6 @@ public class Combate implements Screen {
         if (p1 == null || p2 == null) return; 
 
         shapeRenderer.setProjectionMatrix(camera.combined); 
-        
         Gdx.gl.glEnable(GL20.GL_BLEND); 
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA); 
 
@@ -467,12 +426,12 @@ public class Combate implements Screen {
         float altoEspecial = 14f; 
         float anchoBloque = (ANCHO_BARRA - 10f) / 3f; 
 
+        // HUD Jugador 1 (Izquierda)[cite: 45]
         float posXJ1 = MARGEN_LATERAL; 
         float porcentajeJ1 = p1.getPorcentajeSalud(); 
 
         shapeRenderer.setColor(0.15f, 0.15f, 0.15f, 0.8f); 
         shapeRenderer.rect(posXJ1, posYVida, ANCHO_BARRA, ALTO_BARRA); 
-
         shapeRenderer.setColor(1f - porcentajeJ1, porcentajeJ1, 0.2f, 1f); 
         shapeRenderer.rect(posXJ1, posYVida, ANCHO_BARRA * porcentajeJ1, ALTO_BARRA); 
 
@@ -490,6 +449,7 @@ public class Combate implements Screen {
             }
         }
 
+        // HUD Jugador 2 (Derecha)[cite: 45]
         float posXJ2 = viewport.getWorldWidth() - MARGEN_LATERAL - ANCHO_BARRA; 
         float porcentajeJ2 = p2.getPorcentajeSalud(); 
 
@@ -517,49 +477,36 @@ public class Combate implements Screen {
 
         shapeRenderer.end(); 
 
+        // Marcos exteriores blancos de las barras[cite: 45]
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line); 
         shapeRenderer.setColor(Color.WHITE); 
-
         shapeRenderer.rect(posXJ1, posYVida, ANCHO_BARRA, ALTO_BARRA); 
         shapeRenderer.rect(posXJ2, posYVida, ANCHO_BARRA, ALTO_BARRA); 
-
-        for (int i = 0; i < 3; i++) { 
-            float xBloqueJ1 = posXJ1 + (i * (anchoBloque + 5f)); 
-            float xBloqueJ2 = posXJ2 + ANCHO_BARRA - ((i + 1) * anchoBloque + (i * 5f)); 
-            shapeRenderer.rect(xBloqueJ1, posYEspecial, anchoBloque, altoEspecial); 
-            shapeRenderer.rect(xBloqueJ2, posYEspecial, anchoBloque, altoEspecial); 
-        }
-
         shapeRenderer.end(); 
+
         Gdx.gl.glDisable(GL20.GL_BLEND); 
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
-        if (stagePausa != null) {
-            stagePausa.getViewport().update(width, height, true);
-        }
+        if (stagePausa != null) stagePausa.getViewport().update(width, height, true);
     }
 
-    @Override
-    public void pause() {}
-
-    @Override
-    public void resume() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
 
     @Override
     public void hide() {
-        // Asegurarnos de apagar ambas músicas al ocultar la pantalla
         Music musicaPausa = GestorRecursos.obtenerMusica(GestorRecursos.MUSICA_PAUSA);
-        if (musicaPausa != null && musicaPausa.isPlaying()) {
-            musicaPausa.stop();
-        }
-        if (escenario != null) {
-            escenario.detenerMusica();
-        }
+        if (musicaPausa != null && musicaPausa.isPlaying()) musicaPausa.stop();
+        if (escenario != null) escenario.detenerMusica();
     }
 
+    /**
+     * FUNCIÓN: dispose()
+     * QUÉ HACE: Libera la memoria de los renderizadores, stages y recursos de audio/gráficos al cerrar la pantalla.
+     */
     @Override
     public void dispose() {
         batch.dispose();
@@ -570,12 +517,9 @@ public class Combate implements Screen {
             texFondoPausa.dispose();
         }
         Music musicaPausa = GestorRecursos.obtenerMusica(GestorRecursos.MUSICA_PAUSA);
-        if (musicaPausa != null && musicaPausa.isPlaying()) {
-            musicaPausa.stop();
-        }
-        if (escenario != null) {
-            escenario.detenerMusica();
-        }
+        if (musicaPausa != null && musicaPausa.isPlaying()) musicaPausa.stop();
+        if (escenario != null) escenario.detenerMusica();
+        
         GestorRecursos.dispose();
         GestorRecursosPersonajes.dispose();
     }

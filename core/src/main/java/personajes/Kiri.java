@@ -113,6 +113,7 @@ public class Kiri extends Aves {
     
     @Override
     protected void actualizarAtaqueLateral(float delta) {
+    	float VELOCIDAD_CARGA_LATERAL=800;
         hitboxAtaque.setSize(90f, 60f);
         
         float tiempoTranscurrido = DURACION_TOTAL_LATERAL - tiempoAccion;

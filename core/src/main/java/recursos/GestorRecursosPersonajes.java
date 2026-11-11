@@ -11,7 +11,8 @@ public class GestorRecursosPersonajes {
     public enum EstadoAnimacion {
         REPOSO,
         CAMINAR,
-        SALTAR,       // <--- NUEVO
+        SALTAR,
+        SALTO_DOBLE,
         CAER,
         ATACAR_NEUTRAL,
         ATACAR_LATERAL,
@@ -19,14 +20,12 @@ public class GestorRecursosPersonajes {
         ATACAR_AEREO_NEUTRAL,
         ATACAR_AEREO_LATERAL,
         ATACAR_AEREO_ABAJO,
-        // --- ATAQUES ESPECIALES CONFIGURADOS ---
         ESPECIAL_NEUTRAL,
         ESPECIAL_LATERAL,
         ESPECIAL_ABAJO,
         ESPECIAL_AEREO_NEUTRAL,
         ESPECIAL_AEREO_LATERAL,
         ESPECIAL_AEREO_ABAJO,
-        // ---------------------------------------
         BLOQUEAR,
         ESPECIAL,
         RECIBIR_DANIO
@@ -108,6 +107,7 @@ public class GestorRecursosPersonajes {
             configs.put(EstadoAnimacion.BLOQUEAR,      new ConfigAnimacion("bloquear.png", 0.05f, Animation.PlayMode.NORMAL, 4, 1));
             configs.put(EstadoAnimacion.RECIBIR_DANIO, new ConfigAnimacion("dano.png", 0.10f, Animation.PlayMode.NORMAL, 6, 2));
             configs.put(EstadoAnimacion.SALTAR, new ConfigAnimacion("saltar.png", 0.04f, Animation.PlayMode.NORMAL, 7, 1));
+            configs.put(EstadoAnimacion.SALTO_DOBLE,   new ConfigAnimacion("salto_doble.png", 0.04f, Animation.PlayMode.NORMAL, 6, 1)); // <--- Animación de doble salto
             configs.put(EstadoAnimacion.CAER,   new ConfigAnimacion("caer.png", 0.10f, Animation.PlayMode.LOOP, 1, 1));
 
             // Ataques normales terrestres (ajusta las columnas y filas según tus spritesheets)
@@ -129,6 +129,36 @@ public class GestorRecursosPersonajes {
             configs.put(EstadoAnimacion.ESPECIAL_AEREO_NEUTRAL, new ConfigAnimacion("especial_neutral_aereo.png", 0.08f, Animation.PlayMode.NORMAL, 8, 1));
             configs.put(EstadoAnimacion.ESPECIAL_AEREO_LATERAL, new ConfigAnimacion("especial_lateral_aereo.png", 0.02f, Animation.PlayMode.NORMAL, 7, 2));
             configs.put(EstadoAnimacion.ESPECIAL_AEREO_ABAJO,   new ConfigAnimacion("especial_abajo_aereo.png", 0.03f, Animation.PlayMode.NORMAL, 7, 2));
+        }
+        
+        else if (id.equals("corv")) {
+            // --- CONFIGURACIÓN ESPECÍFICA DE EMUANS ---
+            configs.put(EstadoAnimacion.REPOSO,        new ConfigAnimacion("reposo.png", 0.15f, Animation.PlayMode.LOOP));
+            configs.put(EstadoAnimacion.CAMINAR,       new ConfigAnimacion("caminar.png", 0.05f, Animation.PlayMode.LOOP));
+            configs.put(EstadoAnimacion.BLOQUEAR,      new ConfigAnimacion("bloquear.png", 0.05f, Animation.PlayMode.NORMAL, 4, 1));
+            configs.put(EstadoAnimacion.RECIBIR_DANIO, new ConfigAnimacion("dano.png", 0.10f, Animation.PlayMode.NORMAL, 3, 1));
+            configs.put(EstadoAnimacion.SALTAR, new ConfigAnimacion("saltar.png", 0.04f, Animation.PlayMode.NORMAL, 4, 1));
+            configs.put(EstadoAnimacion.CAER,   new ConfigAnimacion("caer.png", 0.10f, Animation.PlayMode.LOOP, 1, 1));
+
+            // Ataques normales terrestres (ajusta las columnas y filas según tus spritesheets)
+            configs.put(EstadoAnimacion.ATACAR_NEUTRAL,       new ConfigAnimacion("ataque_neutral.png", 0.07f, Animation.PlayMode.NORMAL, 8, 1));
+            configs.put(EstadoAnimacion.ATACAR_LATERAL,       new ConfigAnimacion("ataque_lateral.png", 0.15f, Animation.PlayMode.NORMAL, 8, 1));
+            configs.put(EstadoAnimacion.ATACAR_ABAJO,         new ConfigAnimacion("ataque_abajo.png", 0.04f, Animation.PlayMode.NORMAL, 10, 2));
+            
+            // Ataques normales aéreos
+            configs.put(EstadoAnimacion.ATACAR_AEREO_NEUTRAL, new ConfigAnimacion("ataque_neutral_aereo.png", 0.05f, Animation.PlayMode.NORMAL, 6, 2));
+            configs.put(EstadoAnimacion.ATACAR_AEREO_LATERAL, new ConfigAnimacion("ataque_lateral_aereo.png", 0.03f, Animation.PlayMode.NORMAL, 7, 2));
+            configs.put(EstadoAnimacion.ATACAR_AEREO_ABAJO,   new ConfigAnimacion("ataque_abajo_aereo.png", 0.04f, Animation.PlayMode.NORMAL, 10, 2));
+            
+            // Ataques especiales terrestres
+            configs.put(EstadoAnimacion.ESPECIAL_NEUTRAL,     new ConfigAnimacion("especial_neutral.png", 0.03f, Animation.PlayMode.NORMAL, 8, 1));
+            configs.put(EstadoAnimacion.ESPECIAL_LATERAL,     new ConfigAnimacion("especial_lateral.png", 0.03f, Animation.PlayMode.NORMAL, 8, 1));
+            configs.put(EstadoAnimacion.ESPECIAL_ABAJO,       new ConfigAnimacion("especial_abajo.png", 0.05f, Animation.PlayMode.NORMAL, 11, 2));
+            
+            // Ataques especiales aéreos
+            configs.put(EstadoAnimacion.ESPECIAL_AEREO_NEUTRAL, new ConfigAnimacion("especial_neutral_aereo.png", 0.08f, Animation.PlayMode.NORMAL, 6, 2));
+            configs.put(EstadoAnimacion.ESPECIAL_AEREO_LATERAL, new ConfigAnimacion("especial_lateral_aereo.png", 0.02f, Animation.PlayMode.NORMAL, 9, 2));
+            configs.put(EstadoAnimacion.ESPECIAL_AEREO_ABAJO,   new ConfigAnimacion("especial_abajo_aereo.png", 0.03f, Animation.PlayMode.NORMAL, 11, 2));
         }
         
         

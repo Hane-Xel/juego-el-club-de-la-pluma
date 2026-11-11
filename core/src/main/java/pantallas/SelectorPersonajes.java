@@ -422,17 +422,7 @@ public class SelectorPersonajes implements Screen {
     }
 
     private void iniciarCombate() {
-        GestorRecursos.cargarCombate();
-        GestorRecursos.manager.finishLoading();
-
-        GestorRecursosPersonajes.cargarPersonaje(personajeJ1.toLowerCase(), "characters/" + personajeJ1.toLowerCase());
-        GestorRecursosPersonajes.cargarPersonaje(personajeJ2.toLowerCase(), "characters/" + personajeJ2.toLowerCase());
-
-        Aves jugador1 = crearInstanciaAve(personajeJ1, 300f, 500f);
-        Aves jugador2 = crearInstanciaAve(personajeJ2, 1500f, 500f);
-        Escena escenarioCombate = new Granmont();
-
-        juego.setScreen(new Combate(juego, jugador1, jugador2, escenarioCombate));
+        juego.setScreen(new SelectorEscenario(juego, personajeJ1, personajeJ2));
     }
 
     private Aves crearInstanciaAve(String nombre, float x, float y) {

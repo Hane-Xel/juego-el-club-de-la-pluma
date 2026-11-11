@@ -14,6 +14,7 @@ public class Aves {
     
 	protected boolean dobleSaltoDisponible = false;
 	protected boolean saltoPresionadoUltimoFrame = false; 
+	protected boolean tieneSuperarmor = false;
 	
     protected float FUERZA_KNOCKBACK = 500f;
     protected float tiempoDebuffProyectil = 0f;
@@ -27,6 +28,8 @@ public class Aves {
             tiempoInvulnerable -= delta;
         }
     }
+    
+    
 
     public void aplicarDebuffProyectil(float segundos) {
         this.tiempoDebuffProyectil = segundos;
@@ -112,7 +115,6 @@ public class Aves {
     protected float TIEMPO_ACTIVO_LATERAL   = 0.18f;
     protected float TIEMPO_RECOVERY_LATERAL = 0.20f;
     protected float DURACION_TOTAL_LATERAL  = TIEMPO_STARTUP_LATERAL + TIEMPO_ACTIVO_LATERAL + TIEMPO_RECOVERY_LATERAL;
-    protected float VELOCIDAD_CARGA_LATERAL = 800f;
     protected float DANIO_LATERAL           = 12f;
 
     protected float TIEMPO_STARTUP_ABAJO  = 0.08f;
@@ -163,6 +165,7 @@ public class Aves {
     protected boolean enElSuelo = false;
     protected boolean mirandoDerecha = true;
     protected boolean inermeEnAire = false; 
+    protected boolean suspenderGravedad = false; // <--- NUEVA BANDERA
     
     protected float energiaEspecial = 0f;
     protected float energiaEspecialMaxima = 300f;
@@ -193,10 +196,14 @@ public class Aves {
         actualizar(delta, plataformas, ANCHO_PANTALLA_DEFECTO);
     }
 
-    public void actualizar(float delta, Array<Plataforma> plataformas, float anchoPantalla) {
+public void actualizar(float delta, Array<Plataforma> plataformas, float anchoPantalla) {
         stateTime += delta;
         
         actualizarEfectos(delta);
+        
+        // Restablecemos la suspensión por defecto en cada frame
+        suspenderGravedad = false;
+        tieneSuperarmor = false;
         
         if (tiempoAccion > 0) {
             tiempoAccion -= delta;
@@ -207,7 +214,7 @@ public class Aves {
                 
                 ataqueActual = TipoAtaque.NINGUNO;
                 ataqueAereoActual = TipoAtaqueAereo.NINGUNO;
-                especialActual = TipoAtaqueEspecial.NINGUNO;
+                especialActual = TipoAtaqueEspecial.NINGUNO	;
                 
                 estadoActual = EstadoAnimacion.REPOSO;
             }
@@ -229,14 +236,15 @@ public class Aves {
         if (estaAtacando && tiempoAccion > 0) {
             if (especialActual != TipoAtaqueEspecial.NINGUNO) {
                 actualizarEspeciales(delta);
-            } else if (enElSuelo) {
+            } else if (ataqueActual != TipoAtaque.NINGUNO) {
+                // Si el ataque se inició en tierra, se sigue actualizando aunque salte o se eleve
                 switch (ataqueActual) {
                     case NEUTRAL: actualizarAtaqueNeutral(); break;
                     case LATERAL: actualizarAtaqueLateral(delta); break;
                     case ABAJO:   actualizarAtaqueAbajo(); break;
                     default: break;
                 }
-            } else {
+            } else if (ataqueAereoActual != TipoAtaqueAereo.NINGUNO) {
                 switch (ataqueAereoActual) {
                     case AEREO_NEUTRAL: actualizarAtaqueNeutralAereo(); break;
                     case AEREO_LATERAL: actualizarAtaqueLateralAereo(delta); break;
@@ -249,7 +257,11 @@ public class Aves {
             hitboxAtaque.setPosition(-9999, -9999);
         }
 
-        velocidadY += GRAVEDAD * delta;
+        // La gravedad solo se aplica si la suspensión está desactivada
+        if (!suspenderGravedad) {
+            velocidadY += GRAVEDAD * delta;
+        }
+        
         posX += velocidadX * delta;
         posY += velocidadY * delta;
 
@@ -257,12 +269,12 @@ public class Aves {
         resolverColisiones(plataformas, anchoPantalla);
         determinarEstado();
         
-     // Dentro de tu método actualizar en Aves.java, antes de aplicar la gravedad o al final:
-        float MAX_VELOCIDAD_CAIDA = -1500f; // Ajusta este límite según prefieras
+        float MAX_VELOCIDAD_CAIDA = -2500f; 
         if (velocidadY < MAX_VELOCIDAD_CAIDA) {
             velocidadY = MAX_VELOCIDAD_CAIDA;
         }
     }
+
 
     protected void actualizarAtaqueNeutral() {
         hitboxAtaque.setSize(80f, 60f);
@@ -297,6 +309,7 @@ public class Aves {
     }
 
     protected void actualizarAtaqueLateral(float delta) {
+        float VELOCIDAD_CARGA_LATERAL = 800f;
         hitboxAtaque.setSize(80f, 60f);
         float tiempoTranscurrido = DURACION_TOTAL_LATERAL - tiempoAccion;
         float direccion = mirandoDerecha ? 1f : -1f;
@@ -529,12 +542,20 @@ public class Aves {
     }
 
     public void recibirDanio(float danio, float atacanteX) {
-        // Si tiene invencibilidad activa por bloqueo exitoso, ignora el golpe
-        if (tiempoInvulnerable > 0f) return;
+            // Si tiene invencibilidad activa por bloqueo exitoso, ignora el golpe
+            if (tiempoInvulnerable > 0f) return;
 
-        // Comprobamos si está bloqueando y el golpe entra en el último frame (Parry)
-        boolean esUltimoFrameBloqueo = (estadoActual == EstadoAnimacion.BLOQUEAR && tiempoAccion <= 0.20f);
+            // --- SUPERARMOR ---
+            if (tieneSuperarmor) {
+                salud -= danio; // Recibe el daño en la salud
+                if (salud < 0) salud = 0;
+                return; // Absorbe el golpe: NO cambia de estado, NO cancela el ataque actual
+            }
 
+            // Comprobamos si está bloqueando y el golpe entra en el último frame (Parry)
+            boolean esUltimoFrameBloqueo = (estadoActual == EstadoAnimacion.BLOQUEAR && tiempoAccion <= 0.20f);
+            // ... (resto del método recibirDanio)
+            
         if (esUltimoFrameBloqueo) {
             // --- PARRY / BLOQUEO EXITOSO ---
             salud -= danio * 0.05f; 

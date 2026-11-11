@@ -18,6 +18,7 @@ public class Playa extends Escena {
         this.spawnJ2 = new Vector2(1500f, 200f);
         
         // Nota: No se añade ninguna plataforma a 'this.plataformas' por solicitud expresa.
+        this.plataformas.add(new Plataforma(0f, 0f, 1920f, 150f, null, false));
 
         // 2. Carga de recursos (Fondo y música de la playa)
         this.fondo = GestorRecursos.obtenerTextura("scenes/playa.png");

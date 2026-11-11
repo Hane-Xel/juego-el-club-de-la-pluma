@@ -9,17 +9,34 @@ public class Plataforma {
     private Rectangle hitbox;
     private Texture textura;
     private boolean traspasablePorAbajo;
-    private float offsetX; // Desfase opcional para alinear la hitbox
+    
+    // Desfases opcionales para alinear la hitbox con el dibujo de la textura
+    private float offsetXHitbox; 
+    private float offsetXVisual;
+    private float offsetYVisual;
 
-    public Plataforma(float x, float y, float ancho, float alto, Texture textura, boolean traspasablePorAbajo) {
-        // Si quieres que la hitbox empiece X píxeles antes (por ejemplo, 10 píxeles antes):
-        float margenHitboxAntes = -40f; 
+    public Plataforma(float x, float y, float anchoHitbox, float altoHitbox, Texture textura, boolean traspasablePorAbajo) {
+        // Margen opcional para ajustar la hitbox (por ejemplo, si quieres que empiece un poco antes)
+        this.offsetXHitbox = -40f; 
         
-        this.offsetX = margenHitboxAntes;
-        // La hitbox se desplaza hacia la izquierda esos píxeles
-        this.hitbox = new Rectangle(x - offsetX, y, ancho, alto);
+        // La zona física (hitbox) mantiene el tamaño que tú decidas al crearla
+        this.hitbox = new Rectangle(x - offsetXHitbox, y, anchoHitbox, altoHitbox);
         this.textura = textura;
         this.traspasablePorAbajo = traspasablePorAbajo;
+        
+        // Inicializamos los desfases visuales en 0 por defecto
+        this.offsetXVisual = 0f;
+        this.offsetYVisual = 0f;
+    }
+
+    /**
+     * Constructor avanzado si quieres ajustar manualmente dónde se dibuja la textura 
+     * respecto a la posición lógica de la hitbox.
+     */
+    public Plataforma(float x, float y, float anchoHitbox, float altoHitbox, Texture textura, boolean traspasablePorAbajo, float offsetXVisual, float offsetYVisual) {
+        this(x, y, anchoHitbox, altoHitbox, textura, traspasablePorAbajo);
+        this.offsetXVisual = offsetXVisual;
+        this.offsetYVisual = offsetYVisual;
     }
 
     public void verificarColision(Aves personaje) {
@@ -32,12 +49,14 @@ public class Plataforma {
             float topPlataforma = hitbox.y + hitbox.height;
 
             if (traspasablePorAbajo) {
+                // Lógica para nubes (solo te frenas si vas cayendo y caes justo por encima)
                 if (velocidadY <= 0 && pHitbox.y >= topPlataforma - 25f) {
                     personaje.setPosY(topPlataforma);
                     personaje.setVelocidadY(0);
                     personaje.setEnElSuelo(true);
                 }
             } else {
+                // Lógica para plataformas SÓLIDAS (Suelo principal)
                 if (velocidadY <= 0 && pHitbox.y >= topPlataforma - 30f) {
                     personaje.setPosY(topPlataforma);
                     personaje.setVelocidadY(0);
@@ -49,9 +68,12 @@ public class Plataforma {
 
     public void render(SpriteBatch batch) {
         if (textura != null) {
-            // Dibujamos la textura compensando el offset para que 
-            // visualmente empiece donde termina el margen de la hitbox
-            batch.draw(textura, hitbox.x + offsetX, hitbox.y, textura.getWidth(), textura.getHeight());
+            // DIBUJADO USANDO EL TAMAÑO REAL DE LA TEXTURA:
+            // Usamos textura.getWidth() y textura.getHeight() en lugar de estirarla.
+            float posXDibujo = hitbox.x + offsetXHitbox + offsetXVisual;
+            float posYDibujo = hitbox.y + offsetYVisual;
+            
+            batch.draw(textura, posXDibujo, posYDibujo, textura.getWidth(), textura.getHeight());
         }
     }
 
