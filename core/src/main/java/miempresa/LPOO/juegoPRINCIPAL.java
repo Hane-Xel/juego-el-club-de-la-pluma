@@ -12,7 +12,7 @@ import controles.Controles;
  */
 public class juegoPRINCIPAL extends Game {
 
-    // Instancia global del administrador de controles para que persistan entre pantallas[cite: 47]
+    // Instancia global del administrador de controles para que persistan entre pantallas
     private Controles gestorControles;
 
     /**

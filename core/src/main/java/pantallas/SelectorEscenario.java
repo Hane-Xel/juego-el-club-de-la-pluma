@@ -8,18 +8,17 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import escenarios.Bigben; 
 import escenarios.Dojo;
 import escenarios.Escena;
 import escenarios.Granmont;
@@ -32,6 +31,10 @@ import personajes.Kiri;
 import recursos.GestorRecursos;
 import recursos.GestorRecursosPersonajes;
 
+/**
+ * Pantalla de Selector de Escenario.
+ * Permite al usuario elegir el mapa en el que se llevará a cabo el combate.
+ */
 public class SelectorEscenario implements Screen {
 
     private juegoPRINCIPAL juego;
@@ -44,11 +47,11 @@ public class SelectorEscenario implements Screen {
 
     private BitmapFont fuenteTitulo;
     
-    // Texturas para las miniaturas de los escenarios
     private Texture texGranmont;
     private Texture texPlaya;
     private Texture texDojo;
-    private Texture texturaFallback; // Por si alguna imagen no existe
+    private Texture texBigBen;
+    private Texture texturaFallback;
 
     public SelectorEscenario(juegoPRINCIPAL juego, String personajeJ1, String personajeJ2) {
         this.juego = juego;
@@ -65,10 +68,8 @@ public class SelectorEscenario implements Screen {
     }
 
     private void cargarTexturasEscenarios() {
-        // Textura por defecto de respaldo (un cuadro gris) si falta alguna imagen
         texturaFallback = crearTexturaBorde(300, 180, 4, Color.GRAY);
 
-        // Granmont
         if (Gdx.files.internal("ui/marcos/granmont_cuadro.png").exists()) {
             texGranmont = new Texture(Gdx.files.internal("ui/marcos/granmont_cuadro.png"));
         } else if (Gdx.files.internal("scenes/granmont.png").exists()) {
@@ -77,7 +78,6 @@ public class SelectorEscenario implements Screen {
             texGranmont = texturaFallback;
         }
 
-        // Playa
         if (Gdx.files.internal("ui/marcos/playa_cuadro.png").exists()) {
             texPlaya = new Texture(Gdx.files.internal("ui/marcos/playa_cuadro.png"));
         } else if (Gdx.files.internal("scenes/playa.png").exists()) {
@@ -86,13 +86,20 @@ public class SelectorEscenario implements Screen {
             texPlaya = texturaFallback;
         }
 
-        // Dojo
         if (Gdx.files.internal("ui/marcos/dojo_cuadro.png").exists()) {
             texDojo = new Texture(Gdx.files.internal("ui/marcos/dojo_cuadro.png"));
         } else if (Gdx.files.internal("scenes/dojo.png").exists()) {
             texDojo = new Texture(Gdx.files.internal("scenes/dojo.png"));
         } else {
             texDojo = texturaFallback;
+        }
+
+        if (Gdx.files.internal("ui/marcos/bigben_cuadro.png").exists()) {
+            texBigBen = new Texture(Gdx.files.internal("ui/marcos/bigben_cuadro.png"));
+        } else if (Gdx.files.internal("scenes/bigben.png").exists()) {
+            texBigBen = new Texture(Gdx.files.internal("scenes/bigben.png"));
+        } else {
+            texBigBen = texturaFallback;
         }
     }
 
@@ -121,12 +128,11 @@ public class SelectorEscenario implements Screen {
         Label lblTitulo = new Label("SELECCIONA UN ESCENARIO", estiloTitulo);
         lblTitulo.setAlignment(Align.center);
 
-        // Crear las imágenes interactivas para cada escenario
         Image imgGranmont = new Image(texGranmont);
         imgGranmont.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                iniciarCombate(new Granmont());
+                iniciarCombate("Granmont"); // Pasamos el nombre en lugar de instanciarlo antes
             }
         });
 
@@ -134,7 +140,7 @@ public class SelectorEscenario implements Screen {
         imgPlaya.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                iniciarCombate(new Playa());
+                iniciarCombate("Playa");
             }
         });
 
@@ -142,15 +148,23 @@ public class SelectorEscenario implements Screen {
         imgDojo.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                iniciarCombate(new Dojo());
+                iniciarCombate("Dojo");
             }
         });
 
-        // Tabla interna para organizar las imágenes de forma horizontal o en grilla ordenadamente
+        Image imgBigBen = new Image(texBigBen);
+        imgBigBen.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                iniciarCombate("Bigben");
+            }
+        });
+
         Table tablaOpciones = new Table();
-        tablaOpciones.add(imgGranmont).size(350, 200).pad(20);
-        tablaOpciones.add(imgPlaya).size(350, 200).pad(20);
-        tablaOpciones.add(imgDojo).size(350, 200).pad(20);
+        tablaOpciones.add(imgGranmont).size(350, 200).pad(15);
+        tablaOpciones.add(imgPlaya).size(350, 200).pad(15);
+        tablaOpciones.add(imgDojo).size(350, 200).pad(15);
+        tablaOpciones.add(imgBigBen).size(350, 200).pad(15);
 
         tabla.add(lblTitulo).padBottom(50).row();
         tabla.add(tablaOpciones);
@@ -158,9 +172,30 @@ public class SelectorEscenario implements Screen {
         stage.addActor(tabla);
     }
 
-    private void iniciarCombate(Escena escenarioSeleccionado) {
+    private void iniciarCombate(String nombreEscenario) {
+        // 1. PRIMERO cargamos los recursos de combate y forzamos su carga completa
         GestorRecursos.cargarCombate();
         GestorRecursos.manager.finishLoading();
+
+        // 2. SEGUNDO creamos el escenario (ahora las texturas ya existen en memoria con seguridad)
+        Escena escenarioSeleccionado;
+        switch (nombreEscenario) {
+            case "Granmont":
+                escenarioSeleccionado = new Granmont();
+                break;
+            case "Playa":
+                escenarioSeleccionado = new Playa();
+                break;
+            case "Dojo":
+                escenarioSeleccionado = new Dojo();
+                break;
+            case "Bigben":
+                escenarioSeleccionado = new Bigben();
+                break;
+            default:
+                escenarioSeleccionado = new Granmont();
+                break;
+        }
 
         GestorRecursosPersonajes.cargarPersonaje(personajeJ1.toLowerCase(), "characters/" + personajeJ1.toLowerCase());
         GestorRecursosPersonajes.cargarPersonaje(personajeJ2.toLowerCase(), "characters/" + personajeJ2.toLowerCase());
@@ -213,8 +248,8 @@ public class SelectorEscenario implements Screen {
         if (fuenteTitulo != null) fuenteTitulo.dispose();
         if (texGranmont != null && texGranmont != texturaFallback) texGranmont.dispose();
         if (texPlaya != null && texPlaya != texturaFallback) texPlaya.dispose();
-        if (texDojo != null && texDojo != texturaFallback);
-        	
-        	
+        if (texDojo != null && texDojo != texturaFallback) texDojo.dispose();
+        if (texBigBen != null && texBigBen != texturaFallback) texBigBen.dispose();
+        if (texturaFallback != null) texturaFallback.dispose();
     }
 }

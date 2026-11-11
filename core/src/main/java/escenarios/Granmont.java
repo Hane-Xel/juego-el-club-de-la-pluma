@@ -16,20 +16,26 @@ public class Granmont extends Escena {
         this.spawnJ1 = new Vector2(600f, 260f);
         this.spawnJ2 = new Vector2(1200f, 260f); 
 
-        // 1. Suelo principal sólido de la montaña (no traspasable)
+        // 1. Suelo principal sólido
         this.plataformas.add(new Plataforma(100f, 0f, 1600f, 180f, null, false));
 
-        // 2. Cargar textura de la plataforma de nube y añadirla al escenario
+        // Inicializamos las plataformas
+        cargarPlataformasNube();
+    }
+
+    /**
+     * FUNCIÓN: cargarPlataformasNube()
+     * QUÉ HACE: Asigna las texturas de las nubes a las plataformas.
+     */
+    private void cargarPlataformasNube() {
         Texture texNube = GestorRecursos.obtenerTextura("scenes/nube.png");
         
-        // Plataforma tipo nube flotante (x, y, ancho, alto, textura, traspasablePorAbajo = true)
-        this.plataformas.add(new Plataforma(450f, 450f, 225f, 30f, texNube, true));
-        this.plataformas.add(new Plataforma(1200f, 450f, 225f, 30f, texNube, true));
-        this.plataformas.add(new Plataforma(825f, 650f, 225f, 30f, texNube, true));
-        
-        // Cargar fondo y música de Granmont
-        this.fondo = GestorRecursos.obtenerTextura("scenes/granmont.png");
-        this.musicaFondo = GestorRecursos.obtenerMusica(GestorRecursos.MUSICA_GRANMONT);
+        // Si las plataformas aún no fueron creadas, las añadimos
+        if (this.plataformas.size <= 1) {
+            this.plataformas.add(new Plataforma(450f, 450f, 225f, 30f, texNube, true));
+            this.plataformas.add(new Plataforma(1200f, 450f, 225f, 30f, texNube, true));
+            this.plataformas.add(new Plataforma(825f, 650f, 225f, 30f, texNube, true));
+        }
     }
 
     @Override
@@ -42,12 +48,12 @@ public class Granmont extends Escena {
             reproducirMusica();
         }
 
-        // 1. Dibujar el fondo primero
+        // 1. Dibujar el fondo
         if (fondo != null) {
             batch.draw(fondo, 0, 0, anchoPantalla, altoPantalla);
         }
 
-        // 2. ¡IMPORTANTE! Dibujar las plataformas encima del fondo
+        // 2. Dibujar las plataformas
         renderPlataformas(batch);
     }
 }
