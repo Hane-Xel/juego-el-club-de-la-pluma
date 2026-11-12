@@ -26,15 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.HashMap;
 import java.util.Map;
 
-import escenarios.Escena;
-import escenarios.Granmont;
 import miempresa.LPOO.juegoPRINCIPAL;
-import personajes.Aves;
-import personajes.Emuans;
-import personajes.Kiri;
-import personajes.Corv;
-import recursos.GestorRecursos;
-import recursos.GestorRecursosPersonajes;
 
 public class SelectorPersonajes implements Screen {
 
@@ -423,19 +415,6 @@ public class SelectorPersonajes implements Screen {
 
     private void iniciarCombate() {
         juego.setScreen(new SelectorEscenario(juego, personajeJ1, personajeJ2));
-    }
-
-    private Aves crearInstanciaAve(String nombre, float x, float y) {
-        switch (nombre) {
-            case "Kiri":
-                return new Kiri(x, y);
-            case "Emuans":
-                return new Emuans(x, y);
-            case "Corv":
-                return new Corv(x, y);
-            default:
-                return new Kiri(x, y);
-        }
     }
 
     @Override

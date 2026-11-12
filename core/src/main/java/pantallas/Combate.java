@@ -76,10 +76,10 @@ public class Combate implements Screen {
         this.camera = new OrthographicCamera();
         this.viewport = new FitViewport(1920, 1080, camera);
 
-        // 1. Asignar el escenario recibido por parámetro[cite: 45]
+        // 1. Asignar el escenario recibido por parámetro
         this.escenario = escenario;
 
-        // 2. Cargar los recursos necesarios para el combate[cite: 45]
+        // 2. Cargar los recursos necesarios para el combate
         GestorRecursos.cargarCombate();
         GestorRecursosPersonajes.cargarPersonaje("ave1", "characters/ave1");
 
@@ -292,7 +292,7 @@ public class Combate implements Screen {
         // Dibuja las barras de vida y energía especiales en pantalla[cite: 45]
         dibujarBarrasVida();
 
-        // Dibuja la interfaz de pausa flotante si está activada[cite: 45]
+        // Dibuja la interfaz de pausa flotante si está activada
         if (pausado) {
             stagePausa.act(Gdx.graphics.getDeltaTime()); 
             stagePausa.draw();

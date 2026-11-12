@@ -17,7 +17,7 @@ public class Granmont extends Escena {
         this.spawnJ2 = new Vector2(1200f, 260f); 
 
         // 1. Suelo principal sólido
-        this.plataformas.add(new Plataforma(100f, 0f, 1600f, 180f, null, false));
+        this.plataformas.add(new Plataforma(100f, 0f, 1600f, 180f, null, false)); // null es la textura, que como ya esta en la imagen escenario no se pone y false es si se puede atravesar por abajo
 
         // Inicializamos las plataformas
         cargarPlataformasNube();

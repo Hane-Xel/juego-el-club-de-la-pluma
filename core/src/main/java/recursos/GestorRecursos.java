@@ -5,19 +5,21 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.audio.Music;
 
+// carga todos los recursos que no son personajes
 public class GestorRecursos {
 
     public static final AssetManager manager = new AssetManager();
     
-    private static float volumenGlobal = 1.0f;
-    private static Music musicaActualActiva = null;
+    private static float volumenGlobal = 1.0f;// hace que el volumen global empiece en 1
+    private static Music musicaActualActiva = null; // marca que haya una musica activa
         
     public static final String MUSICA_PLAYA = "music/playa.mp3";
     public static final String MUSICA_BIGBEN = "music/bigben.mp3";
     public static final String MUSICA_DOJO = "music/dojo.mp3";
     public static final String MUSICA_GRANMONT = "music/granmont.mp3";
     public static final String MUSICA_PAUSA = "music/pausa.mp3";
-
+    //la ruta de cada musica
+    
     public static void setVolumenGlobal(float volumen) {
         volumenGlobal = Math.max(0f, Math.min(1f, volumen));
         if (musicaActualActiva != null) {
@@ -51,7 +53,7 @@ public class GestorRecursos {
         manager.finishLoading();
     }
 
-    private static <T> void cargarAssetSeguro(String ruta, Class<T> tipo) {
+    private static <T> void cargarAssetSeguro(String ruta, Class<T> tipo) {// comprueba que el archivo exista
         if (Gdx.files.internal(ruta).exists()) {
             manager.load(ruta, tipo);
         } else {
@@ -75,6 +77,7 @@ public class GestorRecursos {
         }
         return null;
     }
+    
     
     public static void dispose() {
         manager.dispose();

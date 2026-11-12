@@ -23,7 +23,7 @@ public class Corv extends Aves {
         FUERZA_KNOCKBACK = 250f;
         
      // --- ESTADÍSTICAS DE ATAQUES NORMALES ---
-        TIEMPO_STARTUP_NEUTRAL  = 0.07f * 5;
+        TIEMPO_STARTUP_NEUTRAL  = 0.07f * 5; // las duraciones son asi para que sean mas faciles de leer y programar. el primer numero es la velocidad a la que se cambian los cuadros y el segundo es la cantidad de frames que le corresponden a cada fase
         TIEMPO_ACTIVO_NEUTRAL   = 0.07f * 2;
         TIEMPO_RECOVERY_NEUTRAL = 0.07f * 1;
         DURACION_TOTAL_NEUTRAL  = TIEMPO_STARTUP_NEUTRAL + TIEMPO_ACTIVO_NEUTRAL + TIEMPO_RECOVERY_NEUTRAL;
@@ -104,8 +104,7 @@ public class Corv extends Aves {
     
     // --- ATAQUES NORMALES ---
     @Override
-    protected void actualizarAtaqueNeutral() {
-        danioAtaque = DANIO_NEUTRAL;
+    protected void actualizarAtaqueNeutral() { // ataque normal
         hitboxAtaque.setSize(80f, 60f); 
         
         float tiempoTranscurrido = DURACION_TOTAL_NEUTRAL - tiempoAccion;
@@ -124,7 +123,6 @@ public class Corv extends Aves {
     
     @Override
     protected void actualizarAtaqueLateral(float delta) {
-    	danioAtaque = DANIO_LATERAL;
         float VELOCIDAD_CARGA_LATERAL = 990f;
         hitboxAtaque.setSize(80f, 60f);
         float tiempoTranscurrido = DURACION_TOTAL_LATERAL - tiempoAccion;
@@ -136,7 +134,7 @@ public class Corv extends Aves {
             hitboxAtaque.setPosition(-9999, -9999);
         } 
         else if (tiempoTranscurrido <= (TIEMPO_STARTUP_LATERAL + TIEMPO_ACTIVO_LATERAL)) {
-            velocidadX = direccion * VELOCIDAD_CARGA_LATERAL; 
+            velocidadX = direccion * VELOCIDAD_CARGA_LATERAL; // hace que el personaje salga disparado en la direccion a la que ve
             atacando = true;             
             float offsetAtaqueX = mirandoDerecha ? ancho : -hitboxAtaque.width;
             hitboxAtaque.setPosition(posX + offsetAtaqueX, posY + (alto / 4f));
@@ -145,8 +143,8 @@ public class Corv extends Aves {
             atacando = false;
             hitboxAtaque.setPosition(-9999, -9999);
             if (velocidadX != 0) {
-                float desaceleracion = VELOCIDAD_CARGA_LATERAL * 5f * delta;
-                velocidadX = mirandoDerecha ? Math.max(0, velocidadX - desaceleracion) : Math.min(0, velocidadX + desaceleracion);
+                float desaceleracion = VELOCIDAD_CARGA_LATERAL * 5f * delta;// hace que el personaje desacelere con el tiempo
+                velocidadX = mirandoDerecha ? Math.max(0, velocidadX - desaceleracion) : Math.min(0, velocidadX + desaceleracion); // se resta la desaceleracion cada frame del recovery
             }
         }
     }
@@ -209,7 +207,6 @@ public class Corv extends Aves {
     
     @Override
     protected void actualizarAtaqueNeutralAereo() {
-        danioAtaque = DANIO_AEREO_NEUTRAL; // Puedes cambiarlo a DANIO_NEUTRAL si prefieres el mismo daño exacto
         hitboxAtaque.setSize(80f, 60f); 
         
         // --- SUSPENSIÓN EN EL AIRE ---
@@ -231,11 +228,10 @@ public class Corv extends Aves {
     }
 
     @Override
-    protected void actualizarAtaqueLateralAereo(float delta) {
-        danioAtaque = DANIO_AEREO_LATERAL;
+    protected void actualizarAtaqueLateralAereo(float delta) {// misma logica que el de tierra
     	float VELOCIDAD_CARGA_LATERAL = 990f;
     	suspenderGravedad = true;
-    	velocidadY = 0f; 
+    	velocidadY = 0f;  //este y el de arriba hacen que se mueva en horizontal en el aire y solo en linea recta. si lo quitas hace cosas feas que no son de alá
         hitboxAtaque.setSize(80f, 60f);
         float tiempoTranscurrido = DURACION_TOTAL_LATERAL - tiempoAccion;
         float direccion = mirandoDerecha ? 1f : -1f;
@@ -262,8 +258,7 @@ public class Corv extends Aves {
     }
 
     @Override
-    protected void actualizarAtaqueAbajoAereo() {
-    	danioAtaque = DANIO_AEREO_ABAJO; 
+    protected void actualizarAtaqueAbajoAereo() {// el mismo ataque que en tierra
         velocidadX = 0; // Quieto horizontalmente
 
         float tiempoTranscurrido = DURACION_TOTAL_ABAJO - tiempoAccion;
@@ -317,10 +312,9 @@ public class Corv extends Aves {
         }
     }
     
-    // --- ATAQUES ESPECIALES ---
+    // --- ATAQUES ESPECIALES --- // son lo mismo que los normales. la diferencia esta en que tienen superarmor, daño distinto y velocidad de ejecucion distintos
     @Override
     protected void actualizarEspecialNeutral(float delta) {
-        danioAtaque = DANIO_ESP_NEUTRAL;
         hitboxAtaque.setSize(80f, 60f); 
         tieneSuperarmor = true; // Activa la superarmadura durante todo el especial neutral
         
@@ -537,4 +531,6 @@ public class Corv extends Aves {
             suspenderGravedad = true; // Congela la gravedad también en el recovery
         }
     }
+
+
 }

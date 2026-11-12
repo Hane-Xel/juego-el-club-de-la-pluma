@@ -42,9 +42,9 @@ public class Controles implements InputProcessor {
 
 	public void actualizar(float delta) {
 		if (personaje1 != null) {
-			personaje1.procesarMovimiento(movJ1, delta);
+			personaje1.procesarMovimiento(movJ1, delta);// pasa el movimiento del jugador
 			// Pasamos el estado del movimiento junto con las acciones
-			personaje1.procesarAcciones(accJ1, movJ1);
+			personaje1.procesarAcciones(accJ1, movJ1);// pasa la accion del jugador
 		}
 		if (personaje2 != null) {
 			personaje2.procesarMovimiento(movJ2, delta);
@@ -52,7 +52,7 @@ public class Controles implements InputProcessor {
 		}
 	}
 
-	public void reconfigurarTecla(int jugador, inputAction accion, int nuevaTecla) {
+	public void reconfigurarTecla(int jugador, inputAction accion, int nuevaTecla) {// sirve para reconfigurar facilmente las teclas
 		if (jugador == 1) {
 			switch (accion) {
 				case movIzquierda: j1Izquierda = nuevaTecla; break;
@@ -77,8 +77,8 @@ public class Controles implements InputProcessor {
 	}
 
 	@Override
-	public boolean keyDown(int keycode) {
-		if (keycode == j1Izquierda) movJ1[0] = true;
+	public boolean keyDown(int keycode) {// marca las teclas que se estan pulsando
+		if (keycode == j1Izquierda/* esto lo saca de arriba del codigo interno de la tecla */) movJ1[0] = true;
 		if (keycode == j1Derecha)   movJ1[1] = true;
 		if (keycode == j1Arriba)    movJ1[2] = true;
 		if (keycode == j1Abajo)     movJ1[3] = true;
@@ -96,9 +96,11 @@ public class Controles implements InputProcessor {
 
 		return true;
 	}
-
+	
+	// son distintos porque ambos son funciones de libgdx que se ejecutan cuando se pulsa una tecla y se suelta respectivamente
+	
 	@Override
-	public boolean keyUp(int keycode) {
+	public boolean keyUp(int keycode) {// analiza cuando es que se suelta la tecla
 		if (keycode == j1Izquierda) movJ1[0] = false;
 		if (keycode == j1Derecha)   movJ1[1] = false;
 		if (keycode == j1Arriba)    movJ1[2] = false;
@@ -130,4 +132,6 @@ public class Controles implements InputProcessor {
 	@Override public boolean touchDragged(int screenX, int screenY, int pointer) { return false; }
 	@Override public boolean mouseMoved(int screenX, int screenY) { return false; }
 	@Override public boolean scrolled(float amountX, float amountY) { return false; }
+	
+	//Este bloque de código son los métodos de relleno u obligatorios que exige la interfaz InputProcessor
 }

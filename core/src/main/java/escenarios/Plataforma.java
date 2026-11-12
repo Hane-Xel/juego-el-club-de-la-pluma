@@ -40,26 +40,26 @@ public class Plataforma {
     }
 
     public void verificarColision(Aves personaje) {
-        if (personaje == null) return;
+        if (personaje == null) return;// para que no explote todo
 
         Rectangle pHitbox = personaje.getHitbox();
         float velocidadY = personaje.getVelocidadY();
 
-        if (pHitbox.overlaps(hitbox)) {
-            float topPlataforma = hitbox.y + hitbox.height;
+        if (pHitbox.overlaps(hitbox)) {// si las hitbox se estan tocando
+            float topPlataforma = hitbox.y + hitbox.height;//calcula la parte de arriba de la plataforma
 
             if (traspasablePorAbajo) {
                 // Lógica para nubes (solo te frenas si vas cayendo y caes justo por encima)
-                if (velocidadY <= 0 && pHitbox.y >= topPlataforma - 25f) {
-                    personaje.setPosY(topPlataforma);
-                    personaje.setVelocidadY(0);
+                if (velocidadY <= 0 && pHitbox.y >= topPlataforma - 25f) { // si el personaje esta por encima de la plataforma y su velocidad es positiva
+                    personaje.setPosY(topPlataforma);// la hitbox del personaje se queda arriba
+                    personaje.setVelocidadY(0);// la velocidad se para
                     personaje.setEnElSuelo(true);
                 }
             } else {
                 // Lógica para plataformas SÓLIDAS (Suelo principal)
-                if (velocidadY <= 0 && pHitbox.y >= topPlataforma - 30f) {
-                    personaje.setPosY(topPlataforma);
-                    personaje.setVelocidadY(0);
+                if (velocidadY <= 0 && pHitbox.y >= topPlataforma - 30f) {// si el personaje esta por encima de la plataforma
+                    personaje.setPosY(topPlataforma);// la hitbox del personaje se queda arriba
+                    personaje.setVelocidadY(0);// la velocidad se para
                     personaje.setEnElSuelo(true);
                 }
             }
